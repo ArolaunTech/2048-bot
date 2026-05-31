@@ -1,0 +1,1 @@
+This project uses the GLFW and glad libraries for rendering.
