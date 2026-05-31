@@ -9,11 +9,6 @@ file(GLOB_RECURSE src
 	"src/*.cpp"
 )
 
-add_subdirectory("libs/glfw")
-
-add_library (glad STATIC "libs/glad/src/glad.c")
-target_include_directories(glad PUBLIC "libs/glad/include")
-
 include(CheckCXXCompilerFlag)
 
 check_cxx_compiler_flag(-Wall temp)
@@ -29,5 +24,3 @@ if(temp2)
 endif()
 
 add_executable(rungame ${src})
-target_link_libraries(rungame glfw glad)
-target_include_directories(rungame PUBLIC "libs/glad/include")
