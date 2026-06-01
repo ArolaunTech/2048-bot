@@ -1,3 +1,3 @@
-cmake engine -B build
+cmake . -B build
 cd build
 make
