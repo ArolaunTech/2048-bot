@@ -4,14 +4,10 @@
 #include <chrono>
 #include <array>
 #include <vector>
-#include <random>
 
 #include "test.h"
 #include "../board/board.h"
-
-std::random_device rd;
-std::mt19937 generator(rd());
-std::uniform_int_distribution<std::uint8_t> distribution(0, 17);
+#include "../random/random.h"
 
 void conduct_board_test() {
 	// Stolen from https://github.com/macroxue/2048-ai/blob/master/board_test.cc
