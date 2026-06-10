@@ -278,6 +278,10 @@ public:
 		return out;
 	}
 
+	std::uint8_t getCell(int r, int c) {
+		return cells[r][c];
+	}
+
 	static void buildMoveMap();
 };
 
