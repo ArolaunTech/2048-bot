@@ -1,9 +1,11 @@
 #include <iostream>
 #include <string>
 #include <cstdint>
+#include <chrono>
 
 #include "board/board.h"
 #include "opt/engine.h"
+#include "opt/strategies/ordered.h"
 #include "test/test.h"
 
 int main() {
@@ -17,12 +19,17 @@ int main() {
 		freqs[i] = 0;
 	}
 
-	for (int it = 0; it < 100000; it++) {
+	const double TIME_LIMIT = 10;
+
+	const auto start = std::chrono::high_resolution_clock::now();
+
+	int it = 0;
+	while (true) {
 		Board game;
 		game.spawn();
 		game.spawn();
 
-		Engine e;
+		OrderedEngine e;
 
 		while (!game.isLoss()) {
 			std::uint8_t move = e.makeDecision(game);
@@ -42,11 +49,20 @@ int main() {
 			}
 		}
 
-		freqs[best]++;
+
+		for (int i = 0; i <= best; i++) {
+			freqs[i]++;
+		}
+
+		it++;
+
+		auto end = std::chrono::high_resolution_clock::now();
+		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+		if (duration.count() > static_cast<int>(1000000 * TIME_LIMIT)) break;
 	}
 
+	std::cout << "Performed " << it << " tests\n\n";
 	for (int i = 0; i < 18; i++) {
-		std::cout << freqs[i] << " ";
+		std::cout << (1 << i) << ": " << (double)freqs[i]/it * 100 << " (" << freqs[i] << " passed)\n";
 	}
-	std::cout << "\n";
 }

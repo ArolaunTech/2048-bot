@@ -18,42 +18,7 @@ public:
 		
 	}
 
-	float eval(const Board& b) {
-		return 0;
-	}
-
-	SearchResult search(const Board& b, int depth) {
-		SearchResult out;
-
-		if (b.isLoss()) {
-			out.eval = -std::numeric_limits<float>::infinity();
-			return out;
-		}
-
-		if (depth == 0) {
-			out.eval = eval(b);
-			return out;
-		}
-
-		for (std::uint8_t movenum = 0; movenum < 4; movenum++) {
-			Board copy = b;
-
-			copy.makeMove(movenum);
-
-
-		}
-
-		return out;
-	}
-
-	std::uint8_t makeDecision(const Board& b) {
-		Board copy = b;
-
-		if (copy.moveUp()) return 0;
-		if (copy.moveLeft()) return 2;
-		if (copy.moveRight()) return 3;
-		return 1;
-	}
+	virtual std::uint8_t makeDecision(const Board& b) const = 0;
 };
 
 #endif
