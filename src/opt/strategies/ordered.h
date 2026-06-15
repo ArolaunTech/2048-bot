@@ -9,7 +9,7 @@
 class OrderedEngine : public Engine {
 private:
 public:
-	std::uint8_t makeDecision(const Board& b) const override {
+	std::uint8_t makeDecision(const Board& b) override {
 		Board copy = b;
 
 		if (copy.moveUp()) return 0;

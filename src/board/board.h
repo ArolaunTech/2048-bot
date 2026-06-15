@@ -265,7 +265,7 @@ public:
 		}
 	}
 
-	std::string to_string() {
+	std::string to_string() const {
 		std::string out = "";
 
 		for (int i = 0; i < 4; i++) {
@@ -278,8 +278,12 @@ public:
 		return out;
 	}
 
-	std::uint8_t getCell(int r, int c) {
+	std::uint8_t getCell(int r, int c) const {
 		return cells[r][c];
+	}
+
+	void setCell(std::uint8_t val, int r, int c) {
+		cells[r][c] = val;
 	}
 
 	static void buildMoveMap();

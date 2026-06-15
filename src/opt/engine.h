@@ -6,11 +6,6 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-struct SearchResult {
-	float eval;
-	std::uint8_t bestmove;
-};
-
 class Engine {
 private:
 public:
@@ -18,7 +13,7 @@ public:
 		
 	}
 
-	virtual std::uint8_t makeDecision(const Board& b) const = 0;
+	virtual std::uint8_t makeDecision(const Board& b) = 0;
 };
 
 #endif

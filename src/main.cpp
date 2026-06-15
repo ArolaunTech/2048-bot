@@ -6,6 +6,7 @@
 #include "board/board.h"
 #include "opt/engine.h"
 #include "opt/strategies/ordered.h"
+#include "opt/strategies/expectimax.h"
 #include "test/test.h"
 
 int main() {
@@ -19,7 +20,7 @@ int main() {
 		freqs[i] = 0;
 	}
 
-	const double TIME_LIMIT = 10;
+	const double TIME_LIMIT = 1800;
 
 	const auto start = std::chrono::high_resolution_clock::now();
 
@@ -29,7 +30,7 @@ int main() {
 		game.spawn();
 		game.spawn();
 
-		OrderedEngine e;
+		ExpectimaxEngine e;
 
 		while (!game.isLoss()) {
 			std::uint8_t move = e.makeDecision(game);
@@ -59,6 +60,12 @@ int main() {
 		auto end = std::chrono::high_resolution_clock::now();
 		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 		if (duration.count() > static_cast<int>(1000000 * TIME_LIMIT)) break;
+
+		if (it % 10000 != 0) continue;
+		std::cout << "Performed " << it << " tests\n\n";
+		for (int i = 0; i < 18; i++) {
+			std::cout << (1 << i) << ": " << (double)freqs[i]/it * 100 << " (" << freqs[i] << " passed)\n";
+		}
 	}
 
 	std::cout << "Performed " << it << " tests\n\n";
