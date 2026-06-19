@@ -25,6 +25,21 @@ public:
 			}
 		}
 
+		int max = 0;
+		int maxloc = 0;
+		for (int r = 0; r < 4; r++) {
+			for (int c = 0; c < 4; c++) {
+				if (b.getCell(r, c) >= max) {
+					max = b.getCell(r, c);
+					maxloc = 4 * r + c;
+				}
+			}
+		}
+
+		const float maxlocadds[16] = {1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1};
+
+		out += maxlocadds[maxloc];
+
 		return out;
 	}
 
@@ -84,7 +99,7 @@ public:
 	}
 
 	std::uint8_t makeDecision(const Board& b) override {
-		SearchResult out = search(b, 2);
+		SearchResult out = search(b, 3);
 
 		return out.bestmove;
 	}

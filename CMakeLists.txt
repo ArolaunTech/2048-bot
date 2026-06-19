@@ -10,6 +10,8 @@ file(GLOB_RECURSE src
 	"src/*.cpp"
 )
 
+list(REMOVE_ITEM src "${CMAKE_SOURCE_DIR}/src/main.cpp" "${CMAKE_SOURCE_DIR}/src/train.cpp")
+
 include(CheckCXXCompilerFlag)
 
 check_cxx_compiler_flag(-Wall temp)
@@ -24,4 +26,5 @@ if(temp2)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 endif()
 
-add_executable(runbot ${src})
+add_executable(runbot ${src} src/main.cpp)
+add_executable(trainbot ${src} src/train.cpp)

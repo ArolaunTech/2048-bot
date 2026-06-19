@@ -61,7 +61,7 @@ int main() {
 		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 		if (duration.count() > static_cast<int>(1000000 * TIME_LIMIT)) break;
 
-		if (it % 10000 != 0) continue;
+		if (it % 1 != 0) continue;
 		std::cout << "Performed " << it << " tests\n\n";
 		for (int i = 0; i < 18; i++) {
 			std::cout << (1 << i) << ": " << (double)freqs[i]/it * 100 << " (" << freqs[i] << " passed)\n";

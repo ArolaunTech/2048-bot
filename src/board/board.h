@@ -286,6 +286,11 @@ public:
 		cells[r][c] = val;
 	}
 
+	std::uint64_t to64BitInt() {
+		// to-do
+		return 0;
+	}
+
 	static void buildMoveMap();
 };
 
