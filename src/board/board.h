@@ -286,9 +286,14 @@ public:
 		cells[r][c] = val;
 	}
 
-	std::uint64_t to64BitInt() {
-		// to-do
-		return 0;
+	int sum() const {
+		int out = 0;
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) {
+				out += (1 << cells[i][j]);
+			}
+		}
+		return out;
 	}
 
 	static void buildMoveMap();

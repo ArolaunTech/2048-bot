@@ -41,6 +41,8 @@ int main() {
 			}
 
 			game.spawn();
+
+			//std::cout << "h" << game.sum() << "\n";
 		}
 
 		std::uint8_t best = 0;
