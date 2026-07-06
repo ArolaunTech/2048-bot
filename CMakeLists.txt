@@ -12,6 +12,16 @@ file(GLOB_RECURSE src
 
 list(REMOVE_ITEM src "${CMAKE_SOURCE_DIR}/src/main.cpp" "${CMAKE_SOURCE_DIR}/src/train.cpp")
 
+include(FetchContent)
+
+FetchContent_Declare(
+    cli11
+    GIT_REPOSITORY https://github.com/CLIUtils/CLI11
+    GIT_TAG e52bef1eb889aab0cdc7dc0d40d1e83ffbd06af6
+)
+
+FetchContent_MakeAvailable(cli11)
+
 include(CheckCXXCompilerFlag)
 
 check_cxx_compiler_flag(-Wall temp)
@@ -28,3 +38,6 @@ endif()
 
 add_executable(runbot ${src} src/main.cpp)
 add_executable(trainbot ${src} src/train.cpp)
+
+target_link_libraries(runbot CLI11::CLI11)
+target_link_libraries(trainbot CLI11::CLI11)

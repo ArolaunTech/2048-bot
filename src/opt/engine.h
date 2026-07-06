@@ -9,10 +9,6 @@
 class Engine {
 private:
 public:
-	Engine() {
-		
-	}
-
 	virtual std::uint8_t makeDecision(const Board& b) = 0;
 };
 

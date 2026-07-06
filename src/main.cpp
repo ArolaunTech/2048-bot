@@ -8,12 +8,17 @@
 #include "opt/strategies/ordered.h"
 #include "opt/strategies/expectimax.h"
 #include "test/test.h"
+#include "eval/ntuple.h"
 
 int main() {
 	Board::buildMoveMap();
 
 	conduct_board_test();
 	conduct_board_speed_test();
+
+	NTupleEval evaluator;
+	evaluator.load_from_file("nets/test2.ntup");
+	std::cout << evaluator.count_weights() << "\n";
 
 	int freqs[18];
 	for (int i = 0; i < 18; i++) {

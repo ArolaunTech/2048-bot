@@ -5,6 +5,7 @@
 
 #include "../engine.h"
 #include "../../board/board.h"
+#include "../../eval/ntuple.h"
 
 #ifndef EXPECTIMAX_H
 #define EXPECTIMAX_H
@@ -58,9 +59,10 @@ struct BoardHasher {
 class ExpectimaxEngine : public Engine {
 private:
 	std::unordered_map<Board, TTVal, BoardHasher> transpositiontable;
+	NTupleEval evaluator;
 public:
 	float eval(const Board& b) const {
-		if (b.isLoss()) return 0;
+		/*if (b.isLoss()) return 0;
 
 		float out = 10;
 
@@ -85,7 +87,18 @@ public:
 
 		out += maxlocadds[maxloc];
 
-		return out;
+		return out;*/
+
+		/*for (int r = 0; r < 4; r++) {
+			for (int c = 0; c < 4; c++) {
+				std::cout << (1 << static_cast<int>(b.getCell(r, c))) << "\t";
+			}
+			std::cout << "\n";
+		}
+		std::cout << evaluator.eval(b) << "\n";
+		std::cout << evaluator.count_weights() << "\n";*/
+
+		return evaluator.eval(b);
 	}
 
 	SearchResult search(const Board& b, int depth) {
@@ -179,7 +192,7 @@ public:
 		//	std::cout << bhasher(it.first) << "bhash\n";
 		//}
 
-		const int depth = 4;
+		const int depth = 3;
 
 		int bsum = b.sum();
 		std::erase_if(transpositiontable, [bsum, depth](const auto& item) {
