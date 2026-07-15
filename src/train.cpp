@@ -16,6 +16,7 @@ int main(const int argc, const char *const *const argv) {
 	std::string outputpath;
 
 	int Ngames;
+	float learning_rate = 0.01;
 
 	app.add_option(
 		"-i,--input", 
@@ -26,14 +27,20 @@ int main(const int argc, const char *const *const argv) {
 	app.add_option(
 		"-o,--output",
 		outputpath,
-		"Output for network, will overwrite existing file if exists"
-	)->check(CLI::NonexistentPath | CLI::ExistingFile)->required();
+		"Output for network, will overwrite existing files"
+	)->check(CLI::ExistingFile)->required();
 
 	app.add_option(
 		"-g,--games",
 		Ngames,
 		"Number of games to play"
 	)->check(CLI::NonNegativeNumber)->required();
+
+	app.add_option(
+		"-l,--learnrate",
+		learning_rate,
+		"Learning rate"
+	);
 
 	CLI11_PARSE(app, argc, argv);
 
@@ -52,10 +59,18 @@ int main(const int argc, const char *const *const argv) {
 	if (inputpath == "") {
 		// Default network settings
 		// Taken from Multistage Temporal Difference Learning for 2048-Like Games by Yeh et al.
-		evaluator.add_tuple(std::vector<int>{0, 4, 8, 9, 12, 13});
-		evaluator.add_tuple(std::vector<int>{1, 5, 9, 10, 13, 14});
-		evaluator.add_tuple(std::vector<int>{1, 2, 5, 6, 9, 10});
-		evaluator.add_tuple(std::vector<int>{2, 3, 6, 7, 10, 11});
+		evaluator.add_threshold(2000);
+		evaluator.add_evaluator();
+
+		evaluator.add_tuple(0, std::vector<int>{0, 4, 8, 9, 12, 13});
+		evaluator.add_tuple(0, std::vector<int>{1, 5, 9, 10, 13, 14});
+		evaluator.add_tuple(0, std::vector<int>{1, 2, 5, 6, 9, 10});
+		evaluator.add_tuple(0, std::vector<int>{2, 3, 6, 7, 10, 11});
+
+		evaluator.add_tuple(1, std::vector<int>{0, 4, 8, 9, 12, 13});
+		evaluator.add_tuple(1, std::vector<int>{1, 5, 9, 10, 13, 14});
+		evaluator.add_tuple(1, std::vector<int>{1, 2, 5, 6, 9, 10});
+		evaluator.add_tuple(1, std::vector<int>{2, 3, 6, 7, 10, 11});
 	} else {
 		evaluator.load_from_file(inputpath);
 	}
@@ -65,8 +80,7 @@ int main(const int argc, const char *const *const argv) {
 	/*========== Training network ==========*/
 	std::cout << "\nTraining network for " << Ngames << " game(s)...\n";
 
-	const float learning_rate = 0.01;
-	const int aggregate = 10000;
+	const int aggregate = 500;
 
 	int aggregatesum = 0;
 
@@ -107,7 +121,9 @@ int main(const int argc, const char *const *const argv) {
 
 				float movescore = totalscore / nempty;
 
-				if (movescore > bestscore) {
+				//std::cout << movescore << "\n";
+
+				if (movescore >= bestscore) {
 					bestscore = movescore;
 					bestmove = j;
 				}
@@ -115,10 +131,12 @@ int main(const int argc, const char *const *const argv) {
 
 			evaluator.train(game, bestscore, learning_rate);
 
-			game.makeMove(bestmove);
+			bool valid = game.makeMove(bestmove);
 
 			// Spawn
-			game.spawn();
+			if (valid) game.spawn();
+
+			//std::cout << game.to_string() << " " << bestmove << "a\n";
 		}
 
 		aggregatesum += game.sum();
@@ -127,13 +145,7 @@ int main(const int argc, const char *const *const argv) {
 			std::cout << static_cast<float>(aggregatesum) / aggregate << " " << i + 1 << "\n\n";
 			aggregatesum = 0;
 
-			for (int r = 0; r < 4; r++) {
-				for (int c = 0; c < 4; c++) {
-					std::cout << (1 << static_cast<int>(game.getCell(r, c))) << "\t";
-				}
-				std::cout << "\n";
-			}
-			std::cout << "\n";
+			std::cout << game.to_string() << "\n";
 		}
 	}
 	

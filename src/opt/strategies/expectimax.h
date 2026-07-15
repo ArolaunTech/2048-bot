@@ -62,42 +62,6 @@ private:
 	NTupleEval evaluator;
 public:
 	float eval(const Board& b) const {
-		/*if (b.isLoss()) return 0;
-
-		float out = 10;
-
-		for (int r = 0; r < 4; r++) {
-			for (int c = 0; c < 4; c++) {
-				if (b.getCell(r, c) == 0) out++;
-			}
-		}
-
-		int max = 0;
-		int maxloc = 0;
-		for (int r = 0; r < 4; r++) {
-			for (int c = 0; c < 4; c++) {
-				if (b.getCell(r, c) >= max) {
-					max = b.getCell(r, c);
-					maxloc = 4 * r + c;
-				}
-			}
-		}
-
-		const float maxlocadds[16] = {1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1};
-
-		out += maxlocadds[maxloc];
-
-		return out;*/
-
-		/*for (int r = 0; r < 4; r++) {
-			for (int c = 0; c < 4; c++) {
-				std::cout << (1 << static_cast<int>(b.getCell(r, c))) << "\t";
-			}
-			std::cout << "\n";
-		}
-		std::cout << evaluator.eval(b) << "\n";
-		std::cout << evaluator.count_weights() << "\n";*/
-
 		return evaluator.eval(b);
 	}
 
@@ -175,6 +139,10 @@ public:
 		return out;
 	}
 
+	void load_from_file(const std::string& path) {
+		evaluator.load_from_file(path);
+	}
+
 	std::uint8_t makeDecision(const Board& b) override {
 		//size_t total_collisions = 0;
     
@@ -192,7 +160,7 @@ public:
 		//	std::cout << bhasher(it.first) << "bhash\n";
 		//}
 
-		const int depth = 3;
+		const int depth = 2;
 
 		int bsum = b.sum();
 		std::erase_if(transpositiontable, [bsum, depth](const auto& item) {

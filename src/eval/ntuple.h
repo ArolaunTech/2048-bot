@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <cstdint>
 #include <bit>
+#include <iostream>
 
 #include "../board/board.h"
 #include "../utils/maths.h"
@@ -11,13 +12,18 @@
 #ifndef NTUPLE_H
 #define NTUPLE_H
 
-class NTupleEval {
+class NTupleNet {
 private:
-	static std::vector<std::vector<float> > weights;
-	static std::vector<std::vector<int> > tuples;
+	std::vector<std::vector<float> > weights;
+	std::vector<std::vector<int> > tuples;
 
 	static const int NTILES = 18;
 public:
+	NTupleNet() {
+		weights.clear();
+		tuples.clear();
+	}
+
 	std::size_t count_weights() const {
 		std::size_t out = 0;
 
@@ -223,7 +229,115 @@ public:
 		std::vector<int> newtuplecopy = newtuple;
 
 		tuples.push_back(newtuplecopy);
-		weights.push_back(std::vector<float>(nweights, 1e6));
+		weights.push_back(std::vector<float>(nweights, 1e4));
+	}
+};
+
+class NTupleEval {
+private:
+	std::vector<NTupleNet> evaluators;
+	std::vector<int> thresholds;
+public:
+	NTupleEval() {
+		evaluators.clear();
+		thresholds.clear();
+
+		add_evaluator();
+	}
+
+	std::size_t count_weights() const {
+		std::size_t out = 0;
+
+		for (std::size_t i = 0; i < evaluators.size(); i++) {
+			out += evaluators[i].count_weights();
+		}
+
+		return out;
+	}
+
+	float eval(const Board& b) const {
+		int sum = b.sum();
+
+		if (b.isLoss()) return sum;
+
+		for (std::size_t i = 0; i < thresholds.size(); i++) {
+			if (thresholds[i] > sum) {
+				return evaluators[i].eval(b);
+			}
+		}
+		return evaluators[evaluators.size() - 1].eval(b);
+	}
+
+	void train(const Board& b, float target, float learning_rate) {
+		int sum = b.sum();
+
+		for (std::size_t i = 0; i < thresholds.size(); i++) {
+			if (thresholds[i] > sum) {
+				evaluators[i].train(b, target, learning_rate);
+				return;
+			}
+		}
+		evaluators[evaluators.size() - 1].train(b, target, learning_rate);
+	}
+
+	void load_from_file(const std::string& path) {
+		std::ifstream in;
+		in.open(path, std::ios::in);
+
+		if (!in.is_open()) {
+			throw std::runtime_error("Could not open file.");
+		}
+
+		evaluators.clear();
+		thresholds.clear();
+
+		std::string line;
+		int i = 0;
+
+		while (std::getline(in, line)) {
+			if (i % 2 == 0) {
+				add_evaluator();
+
+				evaluators[i / 2].load_from_file(line);
+			} else {
+				thresholds.push_back(std::stoi(line));
+			}
+
+			i++;
+		}
+	}
+
+	void save_to_file(const std::string& path) const {
+		std::ifstream in;
+		in.open(path, std::ios::in);
+
+		if (!in.is_open()) {
+			throw std::runtime_error("Could not open file.");
+		}
+
+		std::string line;
+		int i = 0;
+
+		while (std::getline(in, line)) {
+			if (i % 2 == 0) {
+				evaluators[i / 2].save_to_file(line);
+			}
+
+			i++;
+		}
+	}
+
+	void add_evaluator() {
+		NTupleNet n;
+		evaluators.push_back(n);
+	}
+
+	void add_threshold(int nthreshold) {
+		thresholds.push_back(nthreshold);
+	}
+
+	void add_tuple(int idx, const std::vector<int>& newtuple) {
+		evaluators[idx].add_tuple(newtuple);
 	}
 };
 

@@ -270,8 +270,12 @@ public:
 
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
-				out += std::to_string(static_cast<int>(cells[i][j]));
-				out += " ";
+				if (cells[i][j] == 0) {
+					out += "_\t";
+					continue;
+				}
+				out += std::to_string(1 << static_cast<int>(cells[i][j]));
+				out += "\t";
 			}
 			out += "\n";
 		}

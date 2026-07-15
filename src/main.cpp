@@ -7,18 +7,14 @@
 #include "opt/engine.h"
 #include "opt/strategies/ordered.h"
 #include "opt/strategies/expectimax.h"
+#include "opt/strategies/gpt.h"
 #include "test/test.h"
-#include "eval/ntuple.h"
 
 int main() {
 	Board::buildMoveMap();
 
 	conduct_board_test();
 	conduct_board_speed_test();
-
-	NTupleEval evaluator;
-	evaluator.load_from_file("nets/test2.ntup");
-	std::cout << evaluator.count_weights() << "\n";
 
 	int freqs[18];
 	for (int i = 0; i < 18; i++) {
@@ -29,13 +25,14 @@ int main() {
 
 	const auto start = std::chrono::high_resolution_clock::now();
 
+	ExpectimaxEngine e;
+	e.load_from_file("nets/stages3.txt");
+
 	int it = 0;
 	while (true) {
 		Board game;
 		game.spawn();
 		game.spawn();
-
-		ExpectimaxEngine e;
 
 		while (!game.isLoss()) {
 			std::uint8_t move = e.makeDecision(game);
